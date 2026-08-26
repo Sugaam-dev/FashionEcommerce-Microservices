@@ -1,0 +1,38 @@
+server:
+  port: ${GATEWAY_PORT:8088}
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**, /api/v1/account/**, /api/v1/manage/**
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/v1/categories/**, /api/v1/products/**, /api/v1/admin/inventory/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/cart/**, /api/v1/wishlist/**, /api/v1/orders/**, /api/v1/admin/orders/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payments/**, /api/v1/admin/payments/**
+        - id: coupon-service
+          uri: lb://coupon-service
+          predicates:
+            - Path=/api/v1/coupons/**
+
+jwt:
+  secret: ${JWT_SECRET:e2dcaa3c8476b7f56fd418ddcd3da1870e8f97978130f767ddc0f7344d2eb32d486ac86e16051e62203ae00d00807c00ab5203177c05952548f60247970c08b5}
+
+gateway:
+  rate-limiting:
+    auth-limit: 5
+    browse-limit: 200
+    write-limit: 20
+    upload-limit: 5
+    admin-limit: 100
