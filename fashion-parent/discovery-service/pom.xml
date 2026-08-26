@@ -7,9 +7,7 @@
         <artifactId>fashion-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.pmrgsolution</groupId>
     <artifactId>discovery-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>discovery-service</name>
     <description>discovery-service</description>
     <url/>

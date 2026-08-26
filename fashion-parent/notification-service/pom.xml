@@ -7,9 +7,7 @@
         <artifactId>fashion-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.pmrgsolution</groupId>
     <artifactId>notification-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>notification-service</name>
     <description>notification-service</description>
     <url/>

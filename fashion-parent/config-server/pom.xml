@@ -7,9 +7,7 @@
         <artifactId>fashion-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.pmrgsolution</groupId>
     <artifactId>config-server</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>config-server</name>
     <description>config-server</description>
     <url/>

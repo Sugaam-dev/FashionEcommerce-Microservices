@@ -8,9 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.pmrgsolution</groupId>
     <artifactId>catalog-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>catalog-service</name>
     <description>catalog-service</description>
     <url/>
