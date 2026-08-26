@@ -1,4 +1,4 @@
-﻿# 👗 Fashion E-Commerce Microservices Platform
+# 👗 Fashion E-Commerce Microservices Platform
 
 [![Java](https://img.shields.io/badge/Java-20%20%7C%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
@@ -97,6 +97,7 @@ FashionEcommerce-Microservices/
 │   ├── order-service/                   # Shopping Cart, Checkout, Saga (8083)
 │   ├── payment-service/                 # Stripe/Razorpay Webhooks & Ledger (8084)
 │   ├── coupon-service/                  # Discount Rules & Promo Engine (8085)
+│   ├── inventory-service/               # Stock Reservation & Concurrency Engine (8087)
 │   └── notification-service/            # Kafka Email, SMS, Push Dispatcher (8086)
 ├── .gitignore                           # Enterprise Git protection rules
 └── README.md                            # Main project documentation
@@ -112,12 +113,13 @@ FashionEcommerce-Microservices/
 | **Config Server** | `config-server` | **`8888`** | Spring Cloud Central Config |
 | **API Gateway** | `api-gateway` | **`8088`** | Reactive Gateway Proxy & Ingress |
 | **Auth Service** | `auth-service` | **`8081`** | Identity, Registration, JWT Auth |
-| **Catalog Service** | `catalog-service` | **`8082`** | Products, Inventory, Categories |
+| **Catalog Service** | `catalog-service` | **`8082`** | Products, Categories, S3 Media |
+| **Inventory Service** | `inventory-service` | **`8087`** | Stock Reservation, Concurrency & Warehouses |
 | **Order Service** | `order-service` | **`8083`** | Orders, Carts, Saga Orchestration |
 | **Payment Service** | `payment-service` | **`8084`** | Payment Gateway Integration |
 | **Coupon Service** | `coupon-service` | **`8085`** | Discounts, Vouchers, Promo Rules |
 | **Notification Service** | `notification-service` | **`8086`** | Event-Driven Email/SMS Consumer |
-| **PostgreSQL 16** | `fashion-postgres` | **`5432`** | 6 isolated schema databases |
+| **PostgreSQL 16** | `fashion-postgres` | **`5432`** | 7 isolated schema databases |
 | **Redis 7** | `fashion-redis` | **`6379`** | Token Blacklist & Session Cache |
 | **Apache Kafka** | `fashion-kafka` | **`9092`** | KRaft mode (ZooKeeper-less) broker |
 | **LocalStack AWS S3** | `fashion-localstack` | **`4566`** | Local cloud S3 storage simulator |

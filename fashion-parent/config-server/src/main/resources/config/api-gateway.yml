@@ -25,6 +25,10 @@ spring:
           uri: lb://coupon-service
           predicates:
             - Path=/api/v1/coupons/**
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/v1/inventory/**, /api/v1/admin/inventory/**
 
 jwt:
   secret: ${JWT_SECRET:e2dcaa3c8476b7f56fd418ddcd3da1870e8f97978130f767ddc0f7344d2eb32d486ac86e16051e62203ae00d00807c00ab5203177c05952548f60247970c08b5}
