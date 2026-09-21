@@ -1,28 +1,31 @@
 package com.pmrgsolution.shared.core.exception;
 
-
+/**
+ * Root of the platform exception hierarchy.
+ * <p>
+ * Every domain exception carries an {@link ErrorCode} that already knows
+ * its HTTP status — subclasses never need to pass a raw integer again.
+ */
 public abstract class BaseException extends RuntimeException {
 
-    private final int statusCode;
-    private final String errorCode;
+    private final ErrorCode errorCode;
 
-    protected BaseException(int statusCode, String errorCode, String message) {
+    protected BaseException(ErrorCode errorCode, String message) {
         super(message);
-        this.statusCode = statusCode;
         this.errorCode = errorCode;
     }
 
-    protected BaseException(int statusCode, String errorCode, String message, Throwable cause) {
+    protected BaseException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
-        this.statusCode = statusCode;
         this.errorCode = errorCode;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    /** Convenience — delegates to {@link ErrorCode#httpStatus()}. */
+    public int getStatusCode() {
+        return errorCode.httpStatus();
     }
 }

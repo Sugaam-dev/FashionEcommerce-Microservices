@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.pmrgsolution.shared.core.config.DotenvEnvironmentPostProcessor

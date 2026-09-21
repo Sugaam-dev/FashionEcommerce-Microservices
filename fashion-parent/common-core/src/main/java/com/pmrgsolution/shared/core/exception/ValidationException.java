@@ -3,10 +3,10 @@ package com.pmrgsolution.shared.core.exception;
 public class ValidationException extends BaseException {
 
     public ValidationException(String message) {
-        super(422, "VALIDATION_ERROR", message);
+        super(ErrorCode.VALIDATION_FAILED, message);
     }
 
     public ValidationException(String message, Throwable cause) {
-        super(422, "VALIDATION_ERROR", message, cause);
+        super(ErrorCode.VALIDATION_FAILED, message, cause);
     }
 }
