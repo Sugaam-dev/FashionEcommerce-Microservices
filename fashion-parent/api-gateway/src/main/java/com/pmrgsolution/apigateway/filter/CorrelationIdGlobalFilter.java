@@ -1,7 +1,6 @@
 package com.pmrgsolution.apigateway.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -12,13 +11,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-/**
- * Enterprise Ingress Filter: Assigns and propagates X-Correlation-Id across all microservices.
- */
+@Slf4j
 @Component
 public class CorrelationIdGlobalFilter implements GlobalFilter, Ordered {
 
-    private static final Logger log = LoggerFactory.getLogger(CorrelationIdGlobalFilter.class);
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
 
     @Override
@@ -26,23 +22,27 @@ public class CorrelationIdGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String correlationId = request.getHeaders().getFirst(CORRELATION_ID_HEADER);
 
-        if (correlationId == null || correlationId.trim().isEmpty()) {
+        if (correlationId == null || correlationId.isBlank()) {
             correlationId = UUID.randomUUID().toString();
+            log.debug("Generated new correlation ID: {} for path: {}", correlationId, request.getPath());
         }
 
-        // Mutate request headers to forward correlation ID downstream
+        final String finalCorrelationId = correlationId;
+
+        // Mutate downstream request with correlation ID
         ServerHttpRequest mutatedRequest = request.mutate()
-                .header(CORRELATION_ID_HEADER, correlationId)
+                .header(CORRELATION_ID_HEADER, finalCorrelationId)
                 .build();
 
-        // Mutate response headers to return correlation ID to client
-        final String finalCorrelationId = correlationId;
-        exchange.getResponse().getHeaders().add(CORRELATION_ID_HEADER, finalCorrelationId);
+        // Mutate exchange with updated request
+        ServerWebExchange mutatedExchange = exchange.mutate()
+                .request(mutatedRequest)
+                .build();
 
-        log.debug("Routing request [{}] {} with Correlation-ID: {}",
-                mutatedRequest.getMethod(), mutatedRequest.getURI().getPath(), finalCorrelationId);
+        // Add correlation ID to response headers
+        mutatedExchange.getResponse().getHeaders().add(CORRELATION_ID_HEADER, finalCorrelationId);
 
-        return chain.filter(exchange.mutate().request(mutatedRequest).build());
+        return chain.filter(mutatedExchange);
     }
 
     @Override

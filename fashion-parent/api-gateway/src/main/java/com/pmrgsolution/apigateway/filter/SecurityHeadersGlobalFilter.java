@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-/**
- * Enterprise OWASP Security Headers Filter.
- * Defends against Clickjacking, MIME-Sniffing, XSS, and unencrypted transport attacks.
- */
 @Component
 public class SecurityHeadersGlobalFilter implements GlobalFilter, Ordered {
 
@@ -19,28 +15,18 @@ public class SecurityHeadersGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             HttpHeaders headers = exchange.getResponse().getHeaders();
-
-            // Prevent MIME type sniffing & XSS
-            headers.set("Content-Security-Policy", "default-src 'self'");
-            headers.set("X-Content-Type-Options", "nosniff");
-
-            // Prevent Clickjacking
-            headers.set("X-Frame-Options", "DENY");
-
-            // Legacy XSS protection for older browsers
-            headers.set("X-XSS-Protection", "1; mode=block");
-
-            // Referrer policy
-            headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-            // Permissions policy
-            headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+            headers.add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            headers.add("Content-Security-Policy", "default-src 'self'");
+            headers.add("X-Frame-Options", "DENY");
+            headers.add("X-Content-Type-Options", "nosniff");
+            headers.add("X-XSS-Protection", "1; mode=block");
+            headers.add("Referrer-Policy", "strict-origin-when-cross-origin");
+            headers.add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
         }));
     }
 
     @Override
     public int getOrder() {
-        // Run right before response is committed
         return Ordered.LOWEST_PRECEDENCE;
     }
 }
