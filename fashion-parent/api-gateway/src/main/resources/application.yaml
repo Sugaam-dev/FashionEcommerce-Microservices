@@ -1,5 +1,202 @@
+server:
+  port: ${PORT:8088}
+  shutdown: graceful
+
 spring:
   application:
     name: api-gateway
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+  profiles:
+    active: dev
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+
+  cloud:
+    config:
+      enabled: ${CONFIG_SERVER_ENABLED:true}
+    gateway:
+      routes:
+        # AUTH SERVICE
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**, /api/v1/account/**, /api/v1/manage/**, /api/v1/admin/users/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                rate-limiter: "#{@authStrictLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: auth-circuit-breaker
+                fallbackUri: forward:/fallback/auth
+
+        # CATALOG SERVICE (PUBLIC)
+        - id: catalog-service-public
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/v1/products/**, /api/v1/categories/**, /api/v1/banners/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                rate-limiter: "#{@publicLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: catalog-circuit-breaker
+                fallbackUri: forward:/fallback/catalog
+
+        # CATALOG SERVICE (ADMIN)
+        - id: catalog-service-admin
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/v1/admin/catalog/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                rate-limiter: "#{@adminLimiter}"
+
+        # ORDER SERVICE
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/cart/**, /api/v1/wishlist/**, /api/v1/orders/**, /api/v1/admin/orders/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                rate-limiter: "#{@authenticatedLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: order-circuit-breaker
+                fallbackUri: forward:/fallback/order
+
+        # PAYMENT SERVICE
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payments/**, /api/v1/admin/payments/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                rate-limiter: "#{@authenticatedLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: payment-circuit-breaker
+                fallbackUri: forward:/fallback/payment
+
+        # COUPON SERVICE
+        - id: coupon-service
+          uri: lb://coupon-service
+          predicates:
+            - Path=/api/v1/coupons/**, /api/v1/admin/coupons/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                rate-limiter: "#{@authenticatedLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: coupon-circuit-breaker
+                fallbackUri: forward:/fallback/coupon
+
+        # INVENTORY SERVICE (ADMIN ONLY)
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/v1/admin/inventory/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"
+                rate-limiter: "#{@adminLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: inventory-circuit-breaker
+                fallbackUri: forward:/fallback/inventory
+
+        # NOTIFICATION SERVICE
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/contact/**, /api/v1/store-info/**, /api/v1/email/**, /api/v1/realtime/**, /api/v1/admin/notifications/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                rate-limiter: "#{@publicLimiter}"
+            - name: CircuitBreaker
+              args:
+                name: notification-circuit-breaker
+                fallbackUri: forward:/fallback/notification
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWtleS1mb3ItaHM1MTItYWxnb3JpdGhtLWluLXByb2R1Y3Rpb24tbXVzdC1iZS02NC1ieXRlcy1vci1tb3Jl}
+    issuer: ${JWT_ISSUER:com.pmrgsolution}
+    cookie-name: ${COOKIE_ACCESS_NAME:app-jwt}
+  internal:
+    service-key: ${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      auth-circuit-breaker:
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 3s
+        wait-duration-in-open-state: 15s
+        sliding-window-size: 10
+      catalog-circuit-breaker:
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 3s
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 10
+      order-circuit-breaker:
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 3s
+        wait-duration-in-open-state: 15s
+        sliding-window-size: 10
+      payment-circuit-breaker:
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 3s
+        wait-duration-in-open-state: 15s
+        sliding-window-size: 10
+      coupon-circuit-breaker:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 10
+      inventory-circuit-breaker:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 10
+      notification-circuit-breaker:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0

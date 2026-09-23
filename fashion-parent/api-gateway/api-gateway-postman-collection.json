@@ -1,0 +1,182 @@
+{
+  "info": {
+    "name": "API Gateway Entrypoint Collection",
+    "_postman_id": "945d55c0-api-gateway-v1",
+    "description": "Production Postman Collection for Unified API Gateway (Port 8088) - Routing, Rate Limiting, Correlation ID Propagation, and Microservices Access.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "gatewayUrl",
+      "value": "http://localhost:8088",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYjEyMWQ2ZS1hM2JkLTRkYWQtOWI2NS03NzYwMGQ5OTM1NDIiLCJlbWFpbCI6ImN1c3RvbWVyQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.signature",
+      "type": "string"
+    },
+    {
+      "key": "adminJwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMmNmNDA0OS0wN2Q0LTQ0MGQtOGU2Ni1lM2JhZTNiN2E0YmQiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9BRE1JTiJdfQ.signature",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public Routes (Rate-Limited by IP)",
+      "item": [
+        {
+          "name": "Get Product Catalog (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/products?page=0&size=20",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer Login (Strict Rate Limit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"P@ssword123\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/auth/login",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Public Store Info",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/store-info",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "store-info"]
+            }
+          }
+        },
+        {
+          "name": "Get Public Payment Settings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/payments/settings/public",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "payments", "settings", "public"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authenticated Customer Routes (JWT Relayed)",
+      "item": [
+        {
+          "name": "Get Shopping Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/cart",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Place Order (Checkout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}", "type": "text" },
+              { "key": "Idempotency-Key", "value": "gw-order-checkout-001", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddressId\": \"22222222-2222-2222-2222-222222222222\",\n  \"billingAddressId\": \"22222222-2222-2222-2222-222222222222\",\n  \"paymentType\": \"ONLINE\"\n}"
+            },
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/orders",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get User Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/orders?page=0&size=10",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Routes (ROLE_ADMIN)",
+      "item": [
+        {
+          "name": "Admin Get Orders Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminJwtToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/admin/orders/dashboard/stats",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "dashboard", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Admin Get Pending Manual Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminJwtToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{gatewayUrl}}/api/v1/admin/payments/pending-manual?page=0&size=20",
+              "host": ["{{gatewayUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "pending-manual"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

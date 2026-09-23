@@ -10,14 +10,10 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Enterprise Ingress CORS Configuration.
- * Centralizes cross-origin resource sharing rules across all frontend clients.
- */
 @Configuration
 public class CorsConfig {
 
-    @Value("${cors.allowed-origins:http://localhost:5173}")
+    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private String allowedOrigins;
 
     @Bean
@@ -27,24 +23,18 @@ public class CorsConfig {
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .toList();
-
         corsConfig.setAllowedOrigins(origins);
-        corsConfig.setMaxAge(3600L);
-        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
-        corsConfig.setAllowedHeaders(Arrays.asList(
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        corsConfig.setAllowedHeaders(List.of(
                 "Authorization",
                 "Content-Type",
-                "Accept",
-                "Origin",
-                "X-Requested-With",
-                "X-Correlation-Id"
-        ));
-        corsConfig.setExposedHeaders(Arrays.asList(
-                "Authorization",
                 "X-Correlation-Id",
-                "Set-Cookie"
+                "Idempotency-Key",
+                "X-Internal-Service-Key",
+                "Range"
         ));
         corsConfig.setAllowCredentials(true);
+        corsConfig.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);

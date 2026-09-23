@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: api-gateway-test
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes: []
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+eureka:
+  client:
+    enabled: false
+    fetch-registry: false
+    register-with-eureka: false
+
+app:
+  jwt:
+    secret: dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWtleS1mb3ItaHM1MTItYWxnb3JpdGhtLWluLXByb2R1Y3Rpb24tbXVzdC1iZS02NC1ieXRlcy1vci1tb3Jl
+  internal:
+    service-key: test-internal-key
+
+logging:
+  level:
+    com.pmrgsolution: DEBUG

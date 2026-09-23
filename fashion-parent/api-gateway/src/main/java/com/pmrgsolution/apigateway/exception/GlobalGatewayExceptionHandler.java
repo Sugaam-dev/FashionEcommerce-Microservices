@@ -1,9 +1,9 @@
 package com.pmrgsolution.apigateway.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
@@ -12,24 +12,20 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebExceptionHandler;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Enterprise Gateway Error Handler.
- * Intercepts routing failures, service timeouts, and 404s, returning uniform JSON envelopes
- * instead of raw Netty HTML stack traces.
- */
+@Slf4j
 @Component
-@Order(-2) // Runs before default Spring Boot error handler
-public class GlobalGatewayExceptionHandler implements WebExceptionHandler {
+@Order(-2)
+@RequiredArgsConstructor
+public class GlobalGatewayExceptionHandler implements ErrorWebExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalGatewayExceptionHandler.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
@@ -40,59 +36,57 @@ public class GlobalGatewayExceptionHandler implements WebExceptionHandler {
         }
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        String errorCode = "GATEWAY_ERROR";
-        String message = "An error occurred in the API Gateway.";
+        String errorCode = "INTERNAL_SERVER_ERROR";
+        String userFriendlyMessage = "An internal gateway error occurred";
 
         if (ex instanceof ResponseStatusException rse) {
-            status = HttpStatus.resolve(rse.getStatusCode().value());
-            if (status == null) {
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-            }
+            status = HttpStatus.valueOf(rse.getStatusCode().value());
             if (status == HttpStatus.NOT_FOUND) {
                 errorCode = "ROUTE_NOT_FOUND";
-                message = "The requested endpoint was not found on the platform.";
-            } else if (status.is5xxServerError()) {
+                userFriendlyMessage = "The requested endpoint or route was not found";
+            } else if (status == HttpStatus.TOO_MANY_REQUESTS) {
+                errorCode = "RATE_LIMIT_EXCEEDED";
+                userFriendlyMessage = "Too many requests. Please slow down and try again shortly.";
+            } else if (status == HttpStatus.SERVICE_UNAVAILABLE) {
                 errorCode = "SERVICE_UNAVAILABLE";
-                message = "The requested microservice is currently unavailable. Please try again later.";
+                userFriendlyMessage = "Target service is currently unavailable. Please retry shortly.";
+            } else {
+                errorCode = status.name();
+                userFriendlyMessage = rse.getReason() != null ? rse.getReason() : status.getReasonPhrase();
             }
-        } else if (ex.getClass().getSimpleName().contains("NotFoundException") ||
-                   ex.getMessage() != null && ex.getMessage().contains("Unable to find instance")) {
+        } else if (ex instanceof java.net.ConnectException || ex instanceof java.util.concurrent.TimeoutException) {
             status = HttpStatus.SERVICE_UNAVAILABLE;
             errorCode = "SERVICE_UNAVAILABLE";
-            message = "The requested microservice is currently offline or unreachable.";
-        } else if (ex.getClass().getSimpleName().contains("TimeoutException")) {
-            status = HttpStatus.GATEWAY_TIMEOUT;
-            errorCode = "GATEWAY_TIMEOUT";
-            message = "The microservice timed out while processing your request.";
+            userFriendlyMessage = "Target microservice connection failed or timed out";
         }
 
-        log.error("Gateway error [{} - {}] on path {}: {}", errorCode, status.value(),
-                exchange.getRequest().getURI().getPath(), ex.getMessage());
+        log.error("Gateway error [Status: {}, ErrorCode: {}] on path {}: {}",
+                status.value(), errorCode, exchange.getRequest().getPath(), ex.getMessage());
 
         response.setStatusCode(status);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("errorCode", errorCode);
-        errorBody.put("message", message);
-        errorBody.put("timestamp", Instant.now().toString());
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("errorCode", errorCode);
+        errorDetails.put("message", userFriendlyMessage);
+        errorDetails.put("timestamp", Instant.now().toString());
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", false);
         responseBody.put("status", status.value());
+        responseBody.put("message", userFriendlyMessage);
         responseBody.put("data", null);
-        responseBody.put("error", errorBody);
-        responseBody.put("path", exchange.getRequest().getURI().getPath());
-        responseBody.put("timestamp", Instant.now().toString());
+        responseBody.put("error", errorDetails);
+        responseBody.put("path", exchange.getRequest().getPath().value());
 
-        byte[] bytes;
         try {
-            bytes = objectMapper.writeValueAsBytes(responseBody);
-        } catch (JsonProcessingException e) {
-            bytes = ("{\"success\":false,\"status\":500,\"message\":\"Serialization Error\"}").getBytes();
+            byte[] bytes = objectMapper.writeValueAsBytes(responseBody);
+            DataBuffer buffer = response.bufferFactory().wrap(bytes);
+            return response.writeWith(Mono.just(buffer));
+        } catch (Exception e) {
+            log.error("Failed to serialize gateway error response: {}", e.getMessage(), e);
+            byte[] fallback = "{\"success\":false,\"status\":500,\"message\":\"Internal Server Error\"}".getBytes(StandardCharsets.UTF_8);
+            return response.writeWith(Mono.just(response.bufferFactory().wrap(fallback)));
         }
-
-        DataBuffer buffer = response.bufferFactory().wrap(bytes);
-        return response.writeWith(Mono.just(buffer));
     }
 }
