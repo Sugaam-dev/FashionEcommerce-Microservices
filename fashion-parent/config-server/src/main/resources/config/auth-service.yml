@@ -1,16 +1,16 @@
 server:
-  port: 8081
+  port: ${AUTH_PORT:8081}
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/auth_db
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${AUTH_DB_NAME:auth_db}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
+    open-in-view: false
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -21,15 +21,20 @@ spring:
       password: ${REDIS_PASSWORD:}
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-jwt:
-  secret: ${JWT_SECRET:e2dcaa3c8476b7f56fd418ddcd3da1870e8f97978130f767ddc0f7344d2eb32d486ac86e16051e62203ae00d00807c00ab5203177c05952548f60247970c08b5}
-  access-expiry: ${JWT_ACCESS_EXPIRY:900}
-  refresh-expiry: ${JWT_REFRESH_EXPIRY:604800}
-
-lockout:
-  max-attempts: 5
-  duration-minutes: 15
+app:
+  jwt:
+    secret-key: ${APP_JWT_SECRET:${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWtleS1mb3ItaHM1MTItYWxnb3JpdGhtLWluLXByb2R1Y3Rpb24tbXVzdC1iZS02NC1ieXRlcy1vci1tb3Jl}}
+    access-expiration-ms: ${APP_JWT_ACCESS_EXPIRATION_MS:900000}
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000}
+    issuer: ${APP_JWT_ISSUER:fashion-ecommerce-auth}
+    audience: ${APP_JWT_AUDIENCE:ecommerce-api}
+    cookie-access-name: ${APP_COOKIE_ACCESS_NAME:accessToken}
+    cookie-refresh-name: ${APP_COOKIE_REFRESH_NAME:refreshToken}
+    cookie-secure: ${APP_COOKIE_SECURE:false}
+    cookie-same-site: ${APP_COOKIE_SAME_SITE:Lax}
+    cookie-domain: ${APP_COOKIE_DOMAIN:}
+    internal-service-key: ${APP_INTERNAL_SERVICE_KEY:${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}}
+    google-client-id: ${APP_GOOGLE_CLIENT_ID:}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}

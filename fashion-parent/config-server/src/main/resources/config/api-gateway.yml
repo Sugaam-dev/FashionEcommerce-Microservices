@@ -4,39 +4,44 @@ server:
 spring:
   cloud:
     gateway:
+      # ── Service Routes ────────────────────────────────────────────────────────
       routes:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/api/v1/auth/**, /api/v1/account/**, /api/v1/manage/**
+            - Path=/api/v1/auth/**, /api/v1/account/**, /api/v1/admin/users/**, /api/v1/internal/users/**
+
         - id: catalog-service
           uri: lb://catalog-service
           predicates:
-            - Path=/api/v1/categories/**, /api/v1/products/**, /api/v1/admin/inventory/**
+            - Path=/api/v1/categories/**, /api/v1/brands/**, /api/v1/products/**, /api/v1/admin/products/**, /api/v1/admin/categories/**, /api/v1/admin/brands/**, /api/v1/internal/catalog/**
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/v1/cart/**, /api/v1/wishlist/**, /api/v1/orders/**, /api/v1/admin/orders/**
+
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/api/v1/payments/**, /api/v1/admin/payments/**
+
         - id: coupon-service
           uri: lb://coupon-service
           predicates:
             - Path=/api/v1/coupons/**
+
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
             - Path=/api/v1/inventory/**, /api/v1/admin/inventory/**
 
-jwt:
-  secret: ${JWT_SECRET:e2dcaa3c8476b7f56fd418ddcd3da1870e8f97978130f767ddc0f7344d2eb32d486ac86e16051e62203ae00d00807c00ab5203177c05952548f60247970c08b5}
+# ── JWT & Security ────────────────────────────────────────────────────────────
+app:
+  jwt:
+    secret-key: ${APP_JWT_SECRET:${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWtleS1mb3ItaHM1MTItYWxnb3JpdGhtLWluLXByb2R1Y3Rpb24tbXVzdC1iZS02NC1ieXRlcy1vci1tb3Jl}}
+    internal-service-key: ${APP_INTERNAL_SERVICE_KEY:${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}}
 
-gateway:
-  rate-limiting:
-    auth-limit: 5
-    browse-limit: 200
-    write-limit: 20
-    upload-limit: 5
-    admin-limit: 100
+# ── CORS ─────────────────────────────────────────────────────────────────────
+cors:
+  allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}

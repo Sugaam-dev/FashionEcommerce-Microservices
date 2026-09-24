@@ -1,16 +1,16 @@
 server:
-  port: 8086
+  port: ${NOTIFICATION_PORT:8086}
 
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/notification_db
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${NOTIFICATION_DB_NAME:notification_db}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
+    open-in-view: false
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -33,3 +33,11 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "com.pmrgsolution.shared.events.*"
+
+app:
+  internal-service-key: ${APP_INTERNAL_SERVICE_KEY:${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}}
+
+management:
+  health:
+    mail:
+      enabled: false

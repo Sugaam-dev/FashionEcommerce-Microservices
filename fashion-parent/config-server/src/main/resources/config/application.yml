@@ -24,3 +24,10 @@ logging:
     com.netflix.discovery.shared.transport: ERROR
     org.apache.hc.client5.http: ERROR
 
+app:
+  jwt:
+    secret-key: ${APP_JWT_SECRET:${JWT_SECRET:dGhpcy1pcy1hLXZlcnktc2VjdXJlLWFuZC1sb25nLWtleS1mb3ItaHM1MTItYWxnb3JpdGhtLWluLXByb2R1Y3Rpb24tbXVzdC1iZS02NC1ieXRlcy1vci1tb3Jl}}
+  internal-service-key: ${APP_INTERNAL_SERVICE_KEY:${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}}
+  internal:
+    service-key: ${APP_INTERNAL_SERVICE_KEY:${INTERNAL_SERVICE_KEY:pmrg-internal-secret-key-change-in-production}}
+
