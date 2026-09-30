@@ -1,0 +1,339 @@
+{
+  "info": {
+    "name": "Payment Service API",
+    "_postman_id": "945d55c0-payment-service-v1",
+    "description": "Production Postman Collection for Payment Service (Port 8084) - Razorpay Integration, Manual UPI QR Proof Review, Payment Settings, and Admin Ledger.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8084",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYjEyMWQ2ZS1hM2JkLTRkYWQtOWI2NS03NzYwMGQ5OTM1NDIiLCJlbWFpbCI6ImN1c3RvbWVyQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.signature",
+      "type": "string"
+    },
+    {
+      "key": "adminJwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMmNmNDA0OS0wN2Q0LTQ0MGQtOGU2Ni1lM2JhZTNiN2E0YmQiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9BRE1JTiJdfQ.signature",
+      "type": "string"
+    },
+    {
+      "key": "internalServiceKey",
+      "value": "pmrg-internal-secret-key-change-in-production",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Customer Payments",
+      "item": [
+        {
+          "name": "Initiate Razorpay Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORD-20261008-001\",\n  \"amount\": 1499.00,\n  \"currency\": \"INR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/razorpay/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "razorpay", "initiate"]
+            }
+          }
+        },
+        {
+          "name": "Verify Razorpay Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "pay_rzp_9988776655",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"{{paymentId}}\",\n  \"razorpayOrderId\": \"order_O8p123456789\",\n  \"razorpayPaymentId\": \"pay_P8p987654321\",\n  \"razorpaySignature\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/razorpay/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "razorpay", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Submit Manual UPI Proof",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORD-20261008-002\",\n  \"amount\": 2499.00,\n  \"utrNumber\": \"UTR2026100840928172\",\n  \"proofImageUrl\": \"https://s3.ap-south-1.amazonaws.com/fashion-receipts/upi-proof-2026.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/manual-upi/submit-proof",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "manual-upi", "submit-proof"]
+            }
+          }
+        },
+        {
+          "name": "Get Public Payment Settings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/settings/public",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "settings", "public"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment by Order ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/order/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "order", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get My Payment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/my-history?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "my-history"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Payments",
+      "item": [
+        {
+          "name": "Get Transactions (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/transactions?status=INITIATED&method=RAZORPAY&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "transactions"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "INITIATED"
+                },
+                {
+                  "key": "method",
+                  "value": "RAZORPAY"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Manual Review Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/pending-manual?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "pending-manual"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction Details by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/{{transactionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "{{transactionId}}"]
+            }
+          }
+        },
+        {
+          "name": "Review Manual Payment (Approve/Reject)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"VERIFIED\",\n  \"rejectionReason\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/{{transactionId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "{{transactionId}}", "review"]
+            }
+          }
+        },
+        {
+          "name": "Get Complete Payment Settings (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Update Payment Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razorpayEnabled\": true,\n  \"razorpayKeyId\": \"rzp_live_public_key_abc\",\n  \"manualUpiEnabled\": true,\n  \"upiId\": \"payments@storeupi\",\n  \"upiAccountHolder\": \"Fashion Store Retail Pvt Ltd\",\n  \"upiQrCodeUrl\": \"https://cdn.fashionstore.com/qr/live-upi-qr.png\",\n  \"bankName\": \"HDFC Bank\",\n  \"bankAccountNumber\": \"50100998877665\",\n  \"bankIfscCode\": \"HDFC0001234\",\n  \"bankBranch\": \"MG Road Branch, Bengaluru\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/payments/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "payments", "settings"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
