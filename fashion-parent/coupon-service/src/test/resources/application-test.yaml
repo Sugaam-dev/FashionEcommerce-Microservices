@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: coupon-service-test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+eureka:
+  client:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  jwt:
+    secret-key: test-secret-key-must-be-at-least-64-characters-long-for-hs512-algorithm-testing-purposes-only-123456789
+  internal:
+    service-key: test-internal-service-key
+
+logging:
+  level:
+    com.pmrgsolution: DEBUG
