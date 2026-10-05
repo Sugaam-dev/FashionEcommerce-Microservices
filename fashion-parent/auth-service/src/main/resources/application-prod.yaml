@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    show-sql: false
+
+app:
+  jwt:
+    cookie-secure: true
+    cookie-same-site: Strict
+
+logging:
+  level:
+    com.pmrgsolution.authservice: INFO
+    org.springframework.security: WARN

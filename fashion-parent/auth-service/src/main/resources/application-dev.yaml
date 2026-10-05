@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    com.pmrgsolution.authservice: DEBUG
+    org.springframework.security: INFO
+    org.springframework.kafka: INFO

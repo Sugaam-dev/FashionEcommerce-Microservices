@@ -1,0 +1,986 @@
+{
+  "info": {
+    "name": "Auth Service API (Port 8081)",
+    "_postman_id": "auth-service-port-8081-v2",
+    "description": "Complete production Postman collection for Auth Service directly on Port 8081. All URLs are unified to http://localhost:8081 and all request bodies contain exact literal demo values (no variable placeholders).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminAccessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "1.1 Register New User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"SecurePass@123\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Morgan\",\n  \"phoneNumber\": \"+919876543210\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registers a new user account on Port 8081. Sends OTP and creates user in PENDING_VERIFICATION state."
+          }
+        },
+        {
+          "name": "1.2 Verify OTP (Account Activation)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    console.log('Saved accessToken & refreshToken to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"otp\": \"123456\",\n  \"otpType\": \"REGISTRATION_VERIFICATION\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/verify-otp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-otp"
+              ]
+            },
+            "description": "Verifies 6-digit registration OTP code and activates the account."
+          }
+        },
+        {
+          "name": "1.3 Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"otpType\": \"REGISTRATION_VERIFICATION\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/resend-otp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "resend-otp"
+              ]
+            },
+            "description": "Resends a new verification OTP to customer email on Port 8081."
+          }
+        },
+        {
+          "name": "1.4 User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    console.log('Login successful! Saved accessToken to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"SecurePass@123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates user and returns JWT accessToken and refreshToken pair."
+          }
+        },
+        {
+          "name": "1.4b Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('adminAccessToken', jsonData.data.accessToken);",
+                  "    console.log('Admin login successful! Saved adminAccessToken to collection variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@fashionecommerce.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates the seeded administrator (admin@fashionecommerce.com) and auto-saves adminAccessToken."
+          }
+        },
+        {
+          "name": "1.5 Refresh Token (Rotation)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"4a71d2b8-9e67-4e9e-8c3b-5a1e2f3d4c5b\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/refresh-token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            },
+            "description": "Rotates refresh token and issues fresh access token on Port 8081."
+          }
+        },
+        {
+          "name": "1.6 Forgot Password (Request Reset OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/forgot-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Sends password reset OTP to email. Port 8081."
+          }
+        },
+        {
+          "name": "1.7 Reset Password (With OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"NewSecurePass@2026\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/reset-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Resets user password with 6-digit OTP code on Port 8081."
+          }
+        },
+        {
+          "name": "1.8 Set Password (OAuth Users)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"NewSecurePass@2026\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/set-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "set-password"
+              ]
+            },
+            "description": "Sets a new password for authenticated user on Port 8081."
+          }
+        },
+        {
+          "name": "1.9 Check Email Service Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/email-status?email=customer@example.com",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "email-status"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "customer@example.com"
+                }
+              ]
+            },
+            "description": "Checks email delivery operational status directly on Auth Service Port 8081."
+          }
+        },
+        {
+          "name": "1.10 Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Revokes session and blacklists token on Port 8081."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Account Management",
+      "item": [
+        {
+          "name": "2.1 Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "me"
+              ]
+            },
+            "description": "Fetches profile of currently logged-in user on Port 8081."
+          }
+        },
+        {
+          "name": "2.2 Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Morgan\",\n  \"phoneNumber\": \"+919876543210\",\n  \"avatarUrl\": \"https://cdn.pmrgsolution.com/avatars/user1.png\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "me"
+              ]
+            },
+            "description": "Updates profile details on Port 8081."
+          }
+        },
+        {
+          "name": "2.3 Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"SecurePass@123\",\n  \"newPassword\": \"NewStrongPass@2026\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/change-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "change-password"
+              ]
+            },
+            "description": "Changes user password and terminates other active sessions on Port 8081."
+          }
+        },
+        {
+          "name": "2.4 List Active Sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/sessions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "sessions"
+              ]
+            },
+            "description": "Lists active login device sessions on Port 8081."
+          }
+        },
+        {
+          "name": "2.5 Revoke All Other Sessions",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/sessions/others",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "sessions",
+                "others"
+              ]
+            },
+            "description": "Terminates all sessions across other devices on Port 8081."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Address Book",
+      "item": [
+        {
+          "name": "3.1 Add New Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressType\": \"SHIPPING\",\n  \"recipientName\": \"Alex Morgan\",\n  \"recipientPhone\": \"+919876543210\",\n  \"addressLine1\": \"Flat 402, Skyline Residency\",\n  \"addressLine2\": \"Sector 45\",\n  \"landmark\": \"Near City Mall\",\n  \"city\": \"Bengaluru\",\n  \"state\": \"Karnataka\",\n  \"postalCode\": \"560001\",\n  \"country\": \"India\",\n  \"isDefault\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses"
+              ]
+            },
+            "description": "Adds a shipping/billing address on Port 8081."
+          }
+        },
+        {
+          "name": "3.2 List All Addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses"
+              ]
+            },
+            "description": "Retrieves all saved addresses for user on Port 8081."
+          }
+        },
+        {
+          "name": "3.3 Get Address By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses/2c232e7f-b4ce-5ebf-ac76-88711e004653",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses",
+                "2c232e7f-b4ce-5ebf-ac76-88711e004653"
+              ]
+            },
+            "description": "Gets single address details on Port 8081."
+          }
+        },
+        {
+          "name": "3.4 Update Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressType\": \"BOTH\",\n  \"recipientName\": \"Alex Morgan Updated\",\n  \"recipientPhone\": \"+919876543210\",\n  \"addressLine1\": \"Flat 505, Skyline Towers\",\n  \"addressLine2\": \"Sector 45 Main Rd\",\n  \"landmark\": \"Opposite Metro Station\",\n  \"city\": \"Bengaluru\",\n  \"state\": \"Karnataka\",\n  \"postalCode\": \"560001\",\n  \"country\": \"India\",\n  \"isDefault\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses/2c232e7f-b4ce-5ebf-ac76-88711e004653",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses",
+                "2c232e7f-b4ce-5ebf-ac76-88711e004653"
+              ]
+            },
+            "description": "Updates an existing address on Port 8081."
+          }
+        },
+        {
+          "name": "3.5 Set Address As Default",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses/2c232e7f-b4ce-5ebf-ac76-88711e004653/default",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses",
+                "2c232e7f-b4ce-5ebf-ac76-88711e004653",
+                "default"
+              ]
+            },
+            "description": "Sets address as default on Port 8081."
+          }
+        },
+        {
+          "name": "3.6 Delete Address",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/account/addresses/2c232e7f-b4ce-5ebf-ac76-88711e004653",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "account",
+                "addresses",
+                "2c232e7f-b4ce-5ebf-ac76-88711e004653"
+              ]
+            },
+            "description": "Deletes address on Port 8081."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin User Management",
+      "item": [
+        {
+          "name": "4.1 Search Platform Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/admin/users?page=0&size=20&sort=createdAt,desc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Admin search across users on Port 8081."
+          }
+        },
+        {
+          "name": "4.2 Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/admin/users/1b121d6e-a3bd-4dad-9b65-77600d993542",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "1b121d6e-a3bd-4dad-9b65-77600d993542"
+              ]
+            },
+            "description": "Admin fetch of single user details on Port 8081."
+          }
+        },
+        {
+          "name": "4.3 Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LOCKED\",\n  \"reason\": \"Suspicious login attempts flagged by audit system\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/admin/users/1b121d6e-a3bd-4dad-9b65-77600d993542/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "1b121d6e-a3bd-4dad-9b65-77600d993542",
+                "status"
+              ]
+            },
+            "description": "Updates account status to ACTIVE, LOCKED, BANNED, or SUSPENDED on Port 8081."
+          }
+        },
+        {
+          "name": "4.4 Update User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ROLE_MERCHANT\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/admin/users/1b121d6e-a3bd-4dad-9b65-77600d993542/role",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "1b121d6e-a3bd-4dad-9b65-77600d993542",
+                "role"
+              ]
+            },
+            "description": "Updates RBAC role on Port 8081."
+          }
+        },
+        {
+          "name": "4.5 Get Platform User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/admin/users/stats",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "stats"
+              ]
+            },
+            "description": "Returns platform account statistics on Port 8081."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Internal Inter-Service API",
+      "item": [
+        {
+          "name": "5.1 Internal Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Internal-Service-Key",
+                "value": "fashion-internal-microservice-secret-key-2026"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8081/api/v1/internal/users/1b121d6e-a3bd-4dad-9b65-77600d993542",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "internal",
+                "users",
+                "1b121d6e-a3bd-4dad-9b65-77600d993542"
+              ]
+            },
+            "description": "Inter-service verification endpoint called by downstream services on Port 8081."
+          }
+        }
+      ]
+    }
+  ]
+}

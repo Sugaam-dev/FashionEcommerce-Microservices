@@ -1,0 +1,52 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: auth-service-test
+  datasource:
+    url: jdbc:h2:mem:auth_test_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+app:
+  jwt:
+    secret-key: TestSecretKeyForUnitTestsOnlyHS512AlgorithmMustBeAtLeastSixtyFourBytesLongStandard!
+    access-expiration-ms: 900000
+    refresh-expiration-ms: 604800000
+    issuer: fashion-ecommerce-auth-test
+    audience: ecommerce-api-test
+    cookie-access-name: accessToken
+    cookie-refresh-name: refreshToken
+    cookie-secure: false
+    cookie-same-site: Lax
+    internal-service-key: test-internal-service-key-2026
+    google-client-id: test-google-client-id
+  cors:
+    allowed-origins: http://localhost:3000
+  outbox:
+    polling-interval-ms: 2000
+  cleanup:
+    cron: "0 0 3 * * *"
