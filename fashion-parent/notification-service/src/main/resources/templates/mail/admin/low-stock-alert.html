@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Low Stock Alert</title>
+</head>
+<body>
+<div id="content">
+    <h2>⚠️ Low Stock Warning: <span th:text="${sku}">SKU-1234</span></h2>
+    <p>Inventory for the following product has fallen below the safety threshold:</p>
+
+    <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 6px 0;"><strong>Product:</strong> <span th:text="${productName}">Silk Designer Shirt</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>SKU:</strong> <span th:text="${sku}">SKU-1234</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Current Available Stock:</strong> <span style="color: #dc2626; font-weight: 700;" th:text="${currentStock}">3</span></p>
+        <p style="margin: 0;"><strong>Reorder Threshold:</strong> <span th:text="${threshold}">10</span></p>
+    </div>
+
+    <p>Please reorder stock from supplier immediately to prevent out-of-stock cancellations.</p>
+</div>
+</body>
+</html>

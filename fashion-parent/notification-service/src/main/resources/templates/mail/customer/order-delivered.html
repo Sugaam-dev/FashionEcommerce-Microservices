@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Delivered</title>
+</head>
+<body>
+<div id="content">
+    <h2>Your Order Has Been Delivered! 📦</h2>
+    <p>Hello <strong th:text="${firstName != null ? firstName : (name != null ? name : 'Valued Customer')}">Customer</strong>,</p>
+    <p>Your order <strong th:text="'#' + ${orderNumber}">#ORD-12345</strong> was successfully delivered on <strong th:text="${deliveredAt != null ? deliveredAt : 'today'}">today</strong>.</p>
+    
+    <p>We hope you love your new fashion items! If you have any feedback or need to exchange/return an item, our support team is always here to assist.</p>
+</div>
+</body>
+</html>

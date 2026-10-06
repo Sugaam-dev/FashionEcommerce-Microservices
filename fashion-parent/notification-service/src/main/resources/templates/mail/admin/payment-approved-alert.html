@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Approved Alert</title>
+</head>
+<body>
+<div id="content">
+    <h2>✅ Payment Verified & Approved</h2>
+    <p>A manual payment transaction has been reviewed and approved by an administrator.</p>
+
+    <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 6px 0;"><strong>Order:</strong> <span th:text="'#' + ${orderNumber}">#ORD-12345</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Customer:</strong> <span th:text="${customerName}">Customer Name</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Amount:</strong> <span th:text="'₹' + ${amount}">₹0.00</span></p>
+        <p style="margin: 0;"><strong>Approved By:</strong> <span th:text="${approvedBy}">Admin (admin@fashionecommerce.com)</span></p>
+    </div>
+
+    <p>Order processing and inventory fulfillment have been released automatically.</p>
+</div>
+</body>
+</html>

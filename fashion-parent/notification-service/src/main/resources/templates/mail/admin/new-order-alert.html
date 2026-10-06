@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>New Order Alert</title>
+</head>
+<body>
+<div id="content">
+    <h2>🛍️ New Order Received: <span th:text="'#' + ${orderNumber}">#ORD-12345</span></h2>
+    <p>A new customer order has been placed on the store.</p>
+
+    <div style="background-color: #f3f4f6; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 6px 0;"><strong>Customer:</strong> <span th:text="${customerName}">John Doe</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Total Amount:</strong> <span th:text="'₹' + ${total}">₹0.00</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Payment Method:</strong> <span th:text="${paymentMethod != null ? paymentMethod : 'Online'}">CARD</span></p>
+        <p style="margin: 0;"><strong>Total Items:</strong> <span th:text="${itemCount != null ? itemCount : 1}">1</span></p>
+    </div>
+
+    <p>Please review and fulfill this order in the admin portal.</p>
+</div>
+</body>
+</html>

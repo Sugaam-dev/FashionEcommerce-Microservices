@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>VIP Order Alert</title>
+</head>
+<body>
+<div id="content">
+    <h2>⭐ High Value / VIP Order Placed</h2>
+    <p>A high-value order exceeding the VIP threshold has been recorded!</p>
+
+    <div style="background-color: #fefce8; border: 2px solid #fde047; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 6px 0;"><strong>Order Number:</strong> <span th:text="'#' + ${orderNumber}">#ORD-99999</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Customer:</strong> <span th:text="${customerName}">VIP Customer</span></p>
+        <p style="margin: 0;"><strong>Total Value:</strong> <span style="font-size: 18px; font-weight: 700; color: #854d0e;" th:text="'₹' + ${total}">₹50,000.00</span></p>
+    </div>
+
+    <p>Ensure expedited handling and priority customer support for this order.</p>
+</div>
+</body>
+</html>

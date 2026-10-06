@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Locked</title>
+</head>
+<body>
+<div id="content">
+    <h2>Security Alert: Account Temporarily Locked</h2>
+    <p>Hello <strong th:text="${firstName != null ? firstName : 'User'}">User</strong>,</p>
+    <p>Due to multiple consecutive failed login attempts, your account has been temporarily locked to protect your personal information.</p>
+    
+    <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 16px 0; color: #991b1b;">
+        <strong>Lock Expires At:</strong> <span th:text="${unlocksAt != null ? unlocksAt : 'In 30 minutes'}">In 30 minutes</span>
+    </div>
+
+    <p>If this was you, you can try logging in again after the lockout period expires, or reset your password immediately via our "Forgot Password" page.</p>
+</div>
+</body>
+</html>

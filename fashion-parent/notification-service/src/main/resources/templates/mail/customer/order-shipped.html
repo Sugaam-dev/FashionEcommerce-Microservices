@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Order Has Shipped</title>
+</head>
+<body>
+<div id="content">
+    <h2>Your Order is on the Way! 🚚</h2>
+    <p>Hello <strong th:text="${firstName != null ? firstName : (name != null ? name : 'Valued Customer')}">Customer</strong>,</p>
+    <p>Great news! Your order <strong th:text="'#' + ${orderNumber}">#ORD-12345</strong> has been dispatched.</p>
+
+    <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 20px 0;">
+        <p style="margin: 0 0 8px 0;"><strong>Courier:</strong> <span th:text="${courierName != null ? courierName : 'Standard Delivery'}">BlueDart</span></p>
+        <p style="margin: 0 0 8px 0;"><strong>Tracking Number:</strong> <span th:text="${trackingNumber != null ? trackingNumber : 'Pending'}">TRK123456789</span></p>
+        <p style="margin: 0;"><strong>Estimated Delivery:</strong> <span th:text="${estimatedDelivery != null ? estimatedDelivery : '3-5 Business Days'}">3-5 Days</span></p>
+    </div>
+
+    <p>You can track the real-time status of your parcel directly on our website.</p>
+</div>
+</body>
+</html>

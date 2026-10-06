@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Proof Received</title>
+</head>
+<body>
+<div id="content">
+    <h2>Payment Proof Received – Under Review</h2>
+    <p>Hello <strong th:text="${firstName != null ? firstName : (name != null ? name : 'Valued Customer')}">Customer</strong>,</p>
+    <p>We have received your manual payment proof for order <strong th:text="'#' + ${orderNumber}">#ORD-12345</strong>.</p>
+    
+    <div style="background-color: #f3f4f6; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 8px 0;"><strong>UTR / Reference:</strong> <span th:text="${utrNumber}">UTR1234567890</span></p>
+        <p style="margin: 0;"><strong>Amount:</strong> <span th:text="'₹' + ${amount}">₹0.00</span></p>
+    </div>
+
+    <p>Our finance team will verify the transaction within 24 hours and notify you once your order is confirmed.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="priceBreakdown(subtotal, discount, shippingFee, tax, total)">
+    <table style="width: 100%; margin-top: 12px; font-size: 14px;">
+        <tr>
+            <td style="color: #6b7280; padding: 4px 0;">Subtotal:</td>
+            <td style="text-align: right; padding: 4px 0;" th:text="'₹' + ${subtotal}">₹0.00</td>
+        </tr>
+        <tr th:if="${discount != null and discount > 0}">
+            <td style="color: #16a34a; padding: 4px 0;">Discount:</td>
+            <td style="text-align: right; color: #16a34a; padding: 4px 0;" th:text="'-₹' + ${discount}">-₹0.00</td>
+        </tr>
+        <tr>
+            <td style="color: #6b7280; padding: 4px 0;">Shipping:</td>
+            <td style="text-align: right; padding: 4px 0;" th:text="${shippingFee != null and shippingFee > 0} ? '₹' + ${shippingFee} : 'FREE'">FREE</td>
+        </tr>
+        <tr th:if="${tax != null and tax > 0}">
+            <td style="color: #6b7280; padding: 4px 0;">Estimated Tax:</td>
+            <td style="text-align: right; padding: 4px 0;" th:text="'₹' + ${tax}">₹0.00</td>
+        </tr>
+        <tr style="border-top: 2px solid #111827; font-weight: 700; font-size: 16px;">
+            <td style="padding-top: 10px;">Grand Total:</td>
+            <td style="text-align: right; padding-top: 10px;" th:text="'₹' + ${total}">₹0.00</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

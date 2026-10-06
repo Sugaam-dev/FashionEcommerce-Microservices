@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+</head>
+<body>
+<div id="content">
+    <h2>Order Confirmed! 🎉</h2>
+    <p>Hello <strong th:text="${firstName != null ? firstName : (name != null ? name : 'Valued Customer')}">Customer</strong>,</p>
+    <p>Thank you for shopping with us! We have received your order <strong th:text="'#' + ${orderNumber}">#ORD-12345</strong> and are preparing it for shipment.</p>
+
+    <h3>Order Summary</h3>
+    <div th:if="${items != null}">
+        <div th:replace="~{mail/components/items-table :: itemsTable(${items})}"></div>
+    </div>
+
+    <div th:replace="~{mail/components/price-breakdown :: priceBreakdown(${subtotal}, ${discount}, ${shippingFee}, ${tax}, ${total})}"></div>
+
+    <h3 style="margin-top: 24px;">Shipping Address</h3>
+    <div th:if="${shippingAddress != null}">
+        <div th:replace="~{mail/components/address-block :: addressBlock(${shippingAddress})}"></div>
+    </div>
+
+    <p style="margin-top: 24px;">We'll notify you as soon as your items are on the way.</p>
+</div>
+</body>
+</html>

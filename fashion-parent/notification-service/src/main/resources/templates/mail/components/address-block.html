@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="addressBlock(address)">
+    <div style="background-color: #f9fafb; padding: 16px; border-radius: 6px; margin: 12px 0;">
+        <strong th:text="${address.fullName != null ? address.fullName : (address['fullName'] != null ? address['fullName'] : 'Valued Customer')}">Customer Name</strong><br>
+        <span th:text="${address.addressLine1 != null ? address.addressLine1 : address['addressLine1']}">Street Address</span><br>
+        <span th:if="${address.addressLine2 != null or address['addressLine2'] != null}"
+              th:text="${address.addressLine2 != null ? address.addressLine2 : address['addressLine2']}">Suite/Apt</span>
+        <span th:text="${(address.city != null ? address.city : address['city']) + ', ' + (address.state != null ? address.state : address['state']) + ' ' + (address.postalCode != null ? address.postalCode : address['postalCode'])}">City, State ZIP</span><br>
+        <span th:if="${address.phone != null or address['phone'] != null}"
+              th:text="'Phone: ' + ${(address.phone != null ? address.phone : address['phone'])}">Phone</span>
+    </div>
+</div>
+</body>
+</html>

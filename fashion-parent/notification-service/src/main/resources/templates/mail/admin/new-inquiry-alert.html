@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mail/layout/base-layout :: layout(~{::#content})}">
+<head>
+    <meta charset="UTF-8">
+    <title>New Customer Inquiry</title>
+</head>
+<body>
+<div id="content">
+    <h2>📩 New Customer Contact Inquiry</h2>
+    <p>A new customer inquiry has been submitted via the contact form.</p>
+
+    <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0 0 6px 0;"><strong>Sender:</strong> <span th:text="${senderName}">Jane Smith</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Email:</strong> <span th:text="${senderEmail}">jane@example.com</span></p>
+        <p style="margin: 0 0 6px 0;"><strong>Subject:</strong> <span th:text="${subject}">Order query</span></p>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 12px 0;">
+        <p style="margin: 0;"><strong>Message Preview:</strong></p>
+        <p style="margin: 6px 0 0 0; color: #4b5563;" th:text="${preview}">Inquiry content preview...</p>
+    </div>
+
+    <p>You can respond directly through the Admin Notification Dashboard.</p>
+</div>
+</body>
+</html>
