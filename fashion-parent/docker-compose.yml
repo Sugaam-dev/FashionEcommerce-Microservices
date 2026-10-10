@@ -1,0 +1,7 @@
+# Unified Master Docker Compose - Fashion E-Commerce Microservices Platform
+# Usage:
+#   docker-compose up -d --build (Starts both infrastructure and all 8 domain services)
+
+include:
+  - docker-compose.infra.yml
+  - docker-compose.services.yml
