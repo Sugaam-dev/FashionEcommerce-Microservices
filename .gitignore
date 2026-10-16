@@ -1,10 +1,8 @@
-﻿# ==============================================================================
-# Enterprise GitIgnore - Java Spring Boot Microservices
+# ==============================================================================
+# Enterprise GitIgnore - Fashion E-Commerce Microservices Platform
 # ==============================================================================
 
-# ------------------------------------------------------------------------------
-# 1. CRITICAL SECURITY: Secrets & Environment Files (NEVER COMMIT SENSITIVE DATA)
-# ------------------------------------------------------------------------------
+# ── 1. Critical Security: Secrets & Environment Files (NEVER COMMIT) ─────────
 .env
 .env.*
 !.env.example
@@ -16,9 +14,7 @@
 credentials.json
 service-account*.json
 
-# ------------------------------------------------------------------------------
-# 2. Build Tools & Compiled Binaries (Maven / Gradle)
-# ------------------------------------------------------------------------------
+# ── 2. Build Tools, Binaries & Archives ───────────────────────────────────────
 target/
 **/target/
 build/
@@ -33,60 +29,29 @@ out/
 *.zip
 *.tar.gz
 *.rar
+*.7z
 
 # Preserve Maven Wrapper JAR
 !.mvn/wrapper/maven-wrapper.jar
 
-# ------------------------------------------------------------------------------
-# 3. Logs & Diagnostics
-# ------------------------------------------------------------------------------
-logs/
-**/logs/
-*.log
-*.log.*
-hs_err_pid*
-replay_pid*
-
-# ------------------------------------------------------------------------------
-# 4. IDEs & Editors
-# ------------------------------------------------------------------------------
-# IntelliJ IDEA
+# ── 3. IDEs & Editors ─────────────────────────────────────────────────────────
 .idea/
 *.iml
 *.iws
 *.ipr
-out/
-
-# Eclipse
-.apt_generated
+.vscode/
 .classpath
-.factorypath
 .project
 .settings/
+.factorypath
 .springBeans
 .sts4-cache/
 
-# VS Code
-.vscode/
-
-# NetBeans
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
-
-# ------------------------------------------------------------------------------
-# 5. Operating System Junk
-# ------------------------------------------------------------------------------
-# Windows
+# ── 4. Operating System Junk ──────────────────────────────────────────────────
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
-
-# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -94,11 +59,16 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 
-# ------------------------------------------------------------------------------
-# 6. Database / Local Container Mounts
-# ------------------------------------------------------------------------------
+# ── 5. Logs & Diagnostics ─────────────────────────────────────────────────────
+*.log
+*.log.*
+logs/
+**/logs/
+hs_err_pid*
+replay_pid*
+
+# ── 6. Local Database Mounts & Infrastructure Data ────────────────────────────
 postgres_data/
 redis_data/
 .localstack/
 data/
-docs/
