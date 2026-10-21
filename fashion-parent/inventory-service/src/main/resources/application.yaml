@@ -1,5 +1,5 @@
 server:
-  port: ${INVENTORY_PORT}
+  port: ${INVENTORY_PORT:8087}
   servlet:
     context-path: /
   compression:
@@ -58,9 +58,9 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
       timeout: 2000ms
       lettuce:
         pool:
@@ -69,7 +69,7 @@ spring:
           min-idle: 2
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
 eureka:
   instance:
