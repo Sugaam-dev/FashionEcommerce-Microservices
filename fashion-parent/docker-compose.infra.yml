@@ -2,26 +2,45 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: fashion-postgres
+    restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "${HOST_DB_PORT:-5433}:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: auth_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh:ro
+    networks:
+      - fashion-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     container_name: fashion-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - redis_data:/data
+      - redis-data:/data
+    networks:
+      - fashion-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: confluentinc/cp-kafka:7.6.0
     container_name: fashion-kafka
+    restart: unless-stopped
     ports:
       - "9092:9092"
     environment:
@@ -38,23 +57,43 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-      # Generates a static cluster ID to bypass formatting step in KRaft mode
-      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
-    volumes:
-      - kafka_data:/var/lib/kafka/data
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID:-MkU3OEVBNTcwNTJENDM2Qk}
+      KAFKA_HEAP_OPTS: '-Xmx192m -Xms64m'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - fashion-net
+    healthcheck:
+      test: ["CMD-SHELL", "cub kafka-ready 1 10 -b kafka:29092 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
 
   localstack:
-    image: localstack/localstack:3.8
+    image: localstack/localstack:3.0
     container_name: fashion-localstack
+    restart: unless-stopped
     ports:
       - "4566:4566"
     environment:
-      - AWS_DEFAULT_REGION=ap-south-1
+      SERVICES: s3
+      AWS_DEFAULT_REGION: ap-south-1
     volumes:
-      - localstack_data:/var/lib/localstack
+      - localstack-data:/var/lib/localstack
+    networks:
+      - fashion-net
+    healthcheck:
+      test: ["CMD-SHELL", "awslocal s3 ls >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  fashion-net:
+    name: fashion-net
+    driver: bridge
 
 volumes:
-  postgres_data:
-  redis_data:
-  kafka_data:
-  localstack_data:
+  postgres-data:
+  redis-data:
+  localstack-data:
