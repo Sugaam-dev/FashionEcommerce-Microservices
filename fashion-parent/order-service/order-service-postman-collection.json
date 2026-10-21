@@ -1,0 +1,596 @@
+{
+  "info": {
+    "name": "Order Service API",
+    "_postman_id": "945d55c0-order-service-v1",
+    "description": "Production Postman Collection for Order Service (Port 8083) - Cart, Wishlist, Order Lifecycle, Keyset Pagination, Admin Operations, Invoicing, and Internal Feign Endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxYjEyMWQ2ZS1hM2JkLTRkYWQtOWI2NS03NzYwMGQ5OTM1NDIiLCJlbWFpbCI6ImN1c3RvbWVyQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9DVVNUT01FUiJdfQ.signature",
+      "type": "string"
+    },
+    {
+      "key": "adminJwtToken",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMmNmNDA0OS0wN2Q0LTQ0MGQtOGU2Ni1lM2JhZTNiN2E0YmQiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiUk9MRV9BRE1JTiJdfQ.signature",
+      "type": "string"
+    },
+    {
+      "key": "internalServiceKey",
+      "value": "pmrg-internal-secret-key-change-in-production",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"11111111-1111-1111-1111-111111111111\",\n  \"sku\": \"TSHIRT-BLK-M\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 4\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cart/{{cartItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cart", "{{cartItemId}}"]
+            }
+          }
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cart/{{cartItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cart", "{{cartItemId}}"]
+            }
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Add Item to Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"11111111-1111-1111-1111-111111111111\",\n  \"sku\": \"TSHIRT-BLK-M\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/wishlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "wishlist"]
+            }
+          }
+        },
+        {
+          "name": "Get Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/wishlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "wishlist"]
+            }
+          }
+        },
+        {
+          "name": "Remove Wishlist Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/wishlist/{{wishlistItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "wishlist", "{{wishlistItemId}}"]
+            }
+          }
+        },
+        {
+          "name": "Clear Wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/wishlist",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "wishlist"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders (Customer)",
+      "item": [
+        {
+          "name": "Create Order / Checkout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "idem-key-customer-12345",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddressId\": \"22222222-2222-2222-2222-222222222222\",\n  \"billingAddressId\": \"22222222-2222-2222-2222-222222222222\",\n  \"couponCode\": \"SAVE20\",\n  \"paymentType\": \"ONLINE\",\n  \"customerNotes\": \"Please leave parcel at front porch\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get User Orders (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Ordered by mistake, want a different size\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders", "{{orderId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Download Invoice PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{orderId}}/invoice",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders", "{{orderId}}", "invoice"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Orders",
+      "item": [
+        {
+          "name": "Search & Filter Orders (Offset Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders?status=PROCESSING&paymentType=ONLINE&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PROCESSING"
+                },
+                {
+                  "key": "paymentType",
+                  "value": "ONLINE"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cursor / Keyset Pagination (High Throughput)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/cursor?limit=20&direction=NEXT",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "cursor"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "direction",
+                  "value": "NEXT"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order Detail (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SHIPPED\",\n  \"comments\": \"Dispatched via BlueDart AWB# 987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "{{orderId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Create Offline / POS Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"1b121d6e-a3bd-4dad-9b65-77600d993542\",\n  \"shippingAddress\": {\n    \"recipientName\": \"Store Walk-in Customer\",\n    \"phone\": \"+919876543210\",\n    \"addressLine1\": \"Store 101, High Street\",\n    \"addressLine2\": \"Indiranagar\",\n    \"city\": \"Bengaluru\",\n    \"state\": \"Karnataka\",\n    \"postalCode\": \"560038\",\n    \"country\": \"India\"\n  },\n  \"items\": [\n    {\n      \"productId\": \"11111111-1111-1111-1111-111111111111\",\n      \"sku\": \"TSHIRT-BLK-M\",\n      \"productName\": \"Classic Cotton T-Shirt\",\n      \"color\": \"Black\",\n      \"size\": \"M\",\n      \"quantity\": 1,\n      \"unitPrice\": 999.00,\n      \"taxAmount\": 179.82\n    }\n  ],\n  \"paymentType\": \"OFFLINE_CASH\",\n  \"adminNotes\": \"Counter POS bill #4092\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/offline",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "offline"]
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "dashboard", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Shipping Configuration",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/shipping-config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "shipping-config"]
+            }
+          }
+        },
+        {
+          "name": "Update Shipping Configuration",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminJwtToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"freeShippingThreshold\": 999.00,\n  \"standardShippingFee\": 49.00,\n  \"expressShippingFee\": 149.00,\n  \"codFee\": 29.00,\n  \"taxRate\": 0.18,\n  \"enableCod\": true,\n  \"enableExpressDelivery\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/shipping-config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", "shipping-config"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internal Service Endpoints",
+      "item": [
+        {
+          "name": "Check Verified Purchase",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Internal-Service-Key",
+                "value": "{{internalServiceKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/internal/orders/verified-purchase?userId=1b121d6e-a3bd-4dad-9b65-77600d993542&productId=11111111-1111-1111-1111-111111111111",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "internal", "orders", "verified-purchase"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "1b121d6e-a3bd-4dad-9b65-77600d993542"
+                },
+                {
+                  "key": "productId",
+                  "value": "11111111-1111-1111-1111-111111111111"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
