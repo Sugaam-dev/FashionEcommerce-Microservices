@@ -5,6 +5,7 @@ import feign.RequestInterceptor;
 import feign.Retryer;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@EnableFeignClients(basePackages = "com.pmrgsolution.catalogservice")
 public class FeignConfig {
 
     @Value("${app.internal.service-key:fashion-internal-microservice-secret-key-2026}")

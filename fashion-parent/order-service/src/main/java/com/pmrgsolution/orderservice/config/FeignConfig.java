@@ -12,6 +12,7 @@ import feign.Util;
 import feign.codec.Decoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@EnableFeignClients(basePackages = "com.pmrgsolution.orderservice")
 public class FeignConfig {
 
     @Value("${app.security.internal-service-key:fashion-internal-secret-key-2026-v1}")
