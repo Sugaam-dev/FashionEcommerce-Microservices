@@ -58,7 +58,7 @@ jobs:
       - name: Build and Test All Modules
         working-directory: ./fashion-parent
         run: |
-          ./mvnw clean test -Dspring.profiles.active=test --batch-mode --no-transfer-progress
+          ./mvnw clean test --batch-mode --no-transfer-progress
 
       - name: Generate Multi-Module Test Report
         if: always()
